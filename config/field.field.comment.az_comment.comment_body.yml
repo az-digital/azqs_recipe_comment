@@ -2,15 +2,15 @@ langcode: en
 status: true
 dependencies:
   config:
-    - comment.type.bible_comment
+    - comment.type.az_comment
     - field.storage.comment.comment_body
     - filter.format.restricted_html
   module:
     - text
-id: comment.bible_comment.comment_body
+id: comment.az_comment.comment_body
 field_name: comment_body
 entity_type: comment
-bundle: bible_comment
+bundle: az_comment
 label: Comment
 description: ''
 required: true

@@ -2,13 +2,13 @@ langcode: en
 status: true
 dependencies:
   config:
-    - comment.type.bible_comment
-    - field.field.comment.bible_comment.comment_body
+    - comment.type.az_comment
+    - field.field.comment.az_comment.comment_body
   module:
     - text
-id: comment.bible_comment.default
+id: comment.az_comment.default
 targetEntityType: comment
-bundle: bible_comment
+bundle: az_comment
 mode: default
 content:
   comment_body:

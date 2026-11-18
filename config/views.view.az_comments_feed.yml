@@ -5,8 +5,8 @@ dependencies:
     - comment
     - node
     - user
-id: bible_comments_feed
-label: 'Bible Comments Feed'
+id: az_comments_feed
+label: 'AZ Comments Feed'
 module: views
 description: 'RSS feed of published comments.'
 tag: ''
@@ -19,7 +19,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'The Bible and Interpretation: Comments'
+      title: 'Comments'
       fields: {  }
       pager:
         type: some
@@ -67,7 +67,7 @@ display:
       style:
         type: rss
         options:
-          description: 'Recent comments on The Bible and Interpretation.'
+          description: 'Recent comments.'
       row:
         type: comment_rss
         options:
@@ -104,7 +104,7 @@ display:
       style:
         type: rss
         options:
-          description: 'Recent comments on The Bible and Interpretation.'
+          description: 'Recent comments.'
       row:
         type: comment_rss
         options:

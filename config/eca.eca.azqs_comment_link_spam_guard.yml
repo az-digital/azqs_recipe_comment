@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - comment.type.bible_comment
+    - comment.type.az_comment
   module:
     - eca_content
     - eca_user
@@ -15,9 +15,9 @@ weight: null
 events:
   Event_comment_presave:
     plugin: 'content_entity:presave'
-    label: 'Bible comment presave'
+    label: 'AZ comment presave'
     configuration:
-      type: 'comment bible_comment'
+      type: 'comment az_comment'
     successors:
       -
         id: Gateway_is_new

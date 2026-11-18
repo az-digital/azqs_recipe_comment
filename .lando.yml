@@ -1,0 +1,47 @@
+name: azqs-recipe-comment
+recipe: drupal11
+config:
+  php: '8.3'
+  via: apache:2.4
+  webroot: web
+  database: mariadb:11.4
+  xdebug: false
+services:
+  database:
+    type: compose
+    services:
+      image: mariadb:11.4
+      command: docker-entrypoint.sh mariadbd
+      restart: always
+      ports:
+        - "3306"
+      environment:
+        MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
+        MARIADB_DATABASE: drupal11
+        MYSQL_DATABASE: drupal11
+        MARIADB_USER: drupal11
+        MARIADB_PASSWORD: drupal11
+  appserver:
+    overrides:
+      volumes:
+        - /app
+        - .:/usr/local/azqs-recipe-comment
+    build:
+      - git clone --branch 3.6.x https://github.com/az-digital/az-quickstart-scaffolding.git /app
+      - composer config repositories.localdev path /usr/local/azqs-recipe-comment && composer require --no-update 'az-digital/azqs_recipe_comment:*@dev'
+      - composer config repositories.az_quickstart git https://github.com/az-digital/az_quickstart.git && composer require --no-update az-digital/az_quickstart:3.6.x-dev
+      - composer install
+tooling:
+  install:
+    service: appserver
+    cmd:
+      - /app/vendor/bin/drush --root=/app/web site:install az_quickstart
+        --account-mail=noreply@email.arizona.edu --account-name=azadmin
+        --db-url=mysql://drupal11:drupal11@database:3306/drupal11 -y --verbose
+      - /app/vendor/bin/drush --root=/app/web config:set -y az_cas.settings disable_login_form 0
+      - /app/vendor/bin/drush --root=/app/web cache:rebuild
+      - /app/vendor/bin/drush --root=/app/web pm:enable -y az_demo
+      - /app/vendor/bin/drush --root=/app/web recipe /app/recipes/azqs_recipe_comment -y --verbose
+  drush:
+    service: appserver
+    cmd: /app/vendor/bin/drush --root=/app/web

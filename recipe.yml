@@ -1,25 +1,24 @@
 name: 'Arizona Quickstart Comments'
-description: 'Bible comment type on publications with ALTCHA spam protection, comment views, and ECA moderation/notification workflows.'
+description: 'AZ comment type (attached to publications when present) with ALTCHA spam protection, comment views, and ECA moderation/notification workflows.'
 type: 'recipe'
 install:
   - comment
   - node
   - text
   - views
-  - az_publication
   - captcha
   - altcha
-  - asset_injector
   - eca
   - eca_base
   - eca_content
+  - eca_form
   - eca_user
   - eca_ui
   - bpmn_io
 config:
   strict:
     # Treat field storages strictly, since they influence the database layout.
-    - field.storage.node.field_bible_comments
+    - field.storage.node.field_az_comments
   import:
     comment:
       - core.entity_view_mode.comment.full
@@ -30,18 +29,46 @@ config:
       - system.action.comment_unpublish_action
       - views.view.comment
   actions:
-    core.entity_form_display.node.az_publication.default:
+    # The leading "?" skips these actions when az_publication is not
+    # installed (requires Drupal 11.3+).
+    ?node.type.az_publication:
+      createForEachIfNotExists:
+        field.field.node.%bundle.field_az_comments:
+          field_name: field_az_comments
+          entity_type: node
+          bundle: '%bundle'
+          label: Comments
+          description: 'Your email address will not be published. Required fields are marked *'
+          required: false
+          translatable: false
+          default_value:
+            -
+              status: 2
+              cid: 0
+              last_comment_timestamp: 0
+              last_comment_name: null
+              last_comment_uid: 0
+              comment_count: 0
+          default_value_callback: ''
+          settings:
+            default_mode: 1
+            per_page: 10
+            anonymous: 2
+            form_location: true
+            preview: 1
+          field_type: comment
+    ?core.entity_form_display.node.az_publication.default:
       setComponent:
-        name: field_bible_comments
+        name: field_az_comments
         options:
           type: comment_default
           weight: 33
           region: content
           settings: {  }
           third_party_settings: {  }
-    core.entity_view_display.node.az_publication.default:
+    ?core.entity_view_display.node.az_publication.default:
       setComponent:
-        name: field_bible_comments
+        name: field_az_comments
         options:
           type: comment_default
           label: above
@@ -55,11 +82,13 @@ config:
       grantPermissions:
         - 'access comments'
         - 'post comments'
+        - 'use text format restricted_html'
     user.role.authenticated:
       grantPermissions:
         - 'access comments'
         - 'post comments'
         - 'skip comment approval'
+        - 'use text format restricted_html'
     user.role.az_content_editor:
       grantPermissions:
         - 'administer comments'

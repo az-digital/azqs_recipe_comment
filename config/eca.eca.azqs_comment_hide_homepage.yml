@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - eca_form
+    - modeler_api
+third_party_settings:
+  modeler_api:
+    label: 'Comments: hide Homepage field'
+id: azqs_comment_hide_homepage
+weight: null
+events:
+  Event_comment_form_build:
+    plugin: 'form:form_build'
+    label: 'AZ comment form build'
+    configuration:
+      form_ids: ''
+      entity_type_id: comment
+      bundle: az_comment
+      operation: default
+    successors:
+      -
+        id: Action_hide_homepage
+        condition: ''
+conditions: {  }
+gateways: {  }
+actions:
+  Action_hide_homepage:
+    plugin: eca_form_field_access
+    label: 'Hide Homepage field'
+    configuration:
+      flag: false
+      field_name: author.homepage
+    successors: {  }

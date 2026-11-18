@@ -4,10 +4,7 @@
   "type": "drupal-recipe",
   "require": {
     "az-digital/az_quickstart": "^3.6",
-    "drupal/altcha": "^2.0@RC",
-    "drupal/asset_injector": "^2.21",
     "drupal/bpmn_io": "^3.0",
-    "drupal/captcha": "^2.0",
     "drupal/eca": "^3.1"
   },
   "keywords": [

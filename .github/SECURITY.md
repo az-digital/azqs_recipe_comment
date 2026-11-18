@@ -18,10 +18,10 @@ az-digital-security@list.arizona.edu
 - - - -
 
 ## Never store credentials or any other sensitive data in GitHub such as:
-* API keys, 
-* Database usernames/passwords, 
+* API keys,
+* Database usernames/passwords,
 * And private keys in their GitHub repositories.
-  
+
 - - - -
 
 ## Always use MFA

@@ -5,8 +5,8 @@ dependencies:
     - comment
     - node
     - user
-id: bible_comments_recent
-label: 'Bible Recent comments'
+id: az_comments_recent
+label: 'AZ Recent comments'
 module: views
 description: 'Clone of core comments_recent with an RSS icon linking to /comments/feed.'
 tag: default
@@ -247,7 +247,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<p class="bible-rss-icon text-end mb-0"><a href="/comments/feed" title="Subscribe to comments via RSS"><drupal-icon data-icon-id="material_symbols:rss_feed" data-icon-settings="{&quot;color&quot;:&quot;inherit&quot;}" aria-hidden="true"></drupal-icon><span class="visually-hidden">RSS feed for comments</span></a></p>'
+            value: '<p class="az-rss-icon text-end mb-0"><a href="/comments/feed" title="Subscribe to comments via RSS"><drupal-icon data-icon-id="material_symbols:rss_feed" data-icon-settings="{&quot;color&quot;:&quot;inherit&quot;}" aria-hidden="true"></drupal-icon><span class="visually-hidden">RSS feed for comments</span></a></p>'
             format: az_standard
           tokenize: false
       display_extenders: {  }

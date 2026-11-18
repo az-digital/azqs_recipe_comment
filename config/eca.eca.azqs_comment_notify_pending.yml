@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - comment.type.bible_comment
+    - comment.type.az_comment
   module:
     - eca_content
     - modeler_api
@@ -14,9 +14,9 @@ weight: null
 events:
   Event_comment_insert:
     plugin: 'content_entity:insert'
-    label: 'Bible comment created'
+    label: 'AZ comment created'
     configuration:
-      type: 'comment bible_comment'
+      type: 'comment az_comment'
     successors:
       -
         id: Activity_email_site

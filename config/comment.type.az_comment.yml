@@ -1,7 +1,7 @@
 langcode: en
 status: true
 dependencies: {  }
-id: bible_comment
+id: az_comment
 label: Comment
 target_entity_type_id: node
 description: 'Comment on an article.'
