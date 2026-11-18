@@ -1,0 +1,14 @@
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+vendor/
+composer.lock
+
+.lando/
+node_modules/
+dist/
+build/

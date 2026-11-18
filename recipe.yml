@@ -1,0 +1,66 @@
+name: 'Arizona Quickstart Comments'
+description: 'Bible comment type on publications with ALTCHA spam protection, comment views, and ECA moderation/notification workflows.'
+type: 'recipe'
+install:
+  - comment
+  - node
+  - text
+  - views
+  - az_publication
+  - captcha
+  - altcha
+  - asset_injector
+  - eca
+  - eca_base
+  - eca_content
+  - eca_user
+  - eca_ui
+  - bpmn_io
+config:
+  strict:
+    # Treat field storages strictly, since they influence the database layout.
+    - field.storage.node.field_bible_comments
+  import:
+    comment:
+      - core.entity_view_mode.comment.full
+      - field.storage.comment.comment_body
+      - system.action.comment_delete_action
+      - system.action.comment_publish_action
+      - system.action.comment_save_action
+      - system.action.comment_unpublish_action
+      - views.view.comment
+  actions:
+    core.entity_form_display.node.az_publication.default:
+      setComponent:
+        name: field_bible_comments
+        options:
+          type: comment_default
+          weight: 33
+          region: content
+          settings: {  }
+          third_party_settings: {  }
+    core.entity_view_display.node.az_publication.default:
+      setComponent:
+        name: field_bible_comments
+        options:
+          type: comment_default
+          label: above
+          settings:
+            view_mode: default
+            pager_id: 0
+          third_party_settings: {  }
+          weight: 9
+          region: content
+    user.role.anonymous:
+      grantPermissions:
+        - 'access comments'
+        - 'post comments'
+    user.role.authenticated:
+      grantPermissions:
+        - 'access comments'
+        - 'post comments'
+        - 'skip comment approval'
+    user.role.az_content_editor:
+      grantPermissions:
+        - 'administer comments'
+        - 'edit own comments'

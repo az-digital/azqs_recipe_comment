@@ -1,0 +1,55 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.bible_comment
+  module:
+    - eca_content
+    - modeler_api
+third_party_settings:
+  modeler_api:
+    label: 'Comments: notify site email of comments awaiting approval'
+id: azqs_comment_notify_pending
+weight: null
+events:
+  Event_comment_insert:
+    plugin: 'content_entity:insert'
+    label: 'Bible comment created'
+    configuration:
+      type: 'comment bible_comment'
+    successors:
+      -
+        id: Activity_email_site
+        condition: Flow_unpublished
+conditions:
+  Flow_unpublished:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: true
+      entity: ''
+gateways: {  }
+actions:
+  Activity_email_site:
+    plugin: action_send_email_action
+    label: 'Email site address'
+    configuration:
+      recipient: '[site:mail]'
+      subject: '[site:name]: comment awaiting approval on "[comment:entity:title]"'
+      message: |
+        A new comment is awaiting approval.
+
+        Content: [comment:entity:title]
+        [comment:entity:url]
+
+        Author: [comment:author] ([comment:mail])
+
+        [comment:body]
+
+        Review the approval queue: [site:url]admin/content/comment/approval
+      replace_tokens: true
+    successors: {  }

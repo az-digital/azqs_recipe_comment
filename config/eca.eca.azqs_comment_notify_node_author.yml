@@ -1,0 +1,118 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.bible_comment
+  module:
+    - eca_base
+    - eca_content
+    - modeler_api
+third_party_settings:
+  modeler_api:
+    label: 'Comments: notify content author of new published comments'
+id: azqs_comment_notify_node_author
+weight: null
+events:
+  Event_comment_insert:
+    plugin: 'content_entity:insert'
+    label: 'Bible comment created'
+    configuration:
+      type: 'comment bible_comment'
+    successors:
+      -
+        id: Gateway_notify
+        condition: Flow_is_published
+  Event_comment_update:
+    plugin: 'content_entity:update'
+    label: 'Bible comment updated'
+    configuration:
+      type: 'comment bible_comment'
+    successors:
+      -
+        id: Gateway_update_published
+        condition: Flow_update_is_published
+conditions:
+  Flow_is_published:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: false
+      entity: ''
+  Flow_update_is_published:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: false
+      entity: ''
+  Flow_was_unpublished:
+    plugin: eca_entity_original_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: true
+      entity: ''
+  Flow_not_own_content:
+    plugin: eca_scalar
+    configuration:
+      left: '[comment:author:uid]'
+      right: '[comment:entity:author:uid]'
+      operator: equal
+      type: value
+      case: false
+      negate: true
+  Flow_content_author_has_mail:
+    plugin: eca_scalar
+    configuration:
+      left: '[comment:entity:author:mail]'
+      right: ''
+      operator: equal
+      type: value
+      case: false
+      negate: true
+gateways:
+  Gateway_update_published:
+    type: 0
+    successors:
+      -
+        id: Gateway_notify
+        condition: Flow_was_unpublished
+  Gateway_notify:
+    type: 0
+    successors:
+      -
+        id: Gateway_not_own_content
+        condition: Flow_not_own_content
+  Gateway_not_own_content:
+    type: 0
+    successors:
+      -
+        id: Activity_email_content_author
+        condition: Flow_content_author_has_mail
+actions:
+  Activity_email_content_author:
+    plugin: action_send_email_action
+    label: 'Email content author'
+    configuration:
+      recipient: '[comment:entity:author:mail]'
+      subject: '[site:name]: new comment on "[comment:entity:title]"'
+      message: |
+        Hello [comment:entity:author:display-name],
+
+        [comment:author] commented on "[comment:entity:title]":
+
+        [comment:body]
+
+        View the comment: [comment:url]
+      replace_tokens: true
+    successors: {  }

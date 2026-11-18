@@ -1,0 +1,124 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - comment
+    - node
+    - user
+id: bible_comments_feed
+label: 'Bible Comments Feed'
+module: views
+description: 'RSS feed of published comments.'
+tag: ''
+base_table: comment_field_data
+base_field: cid
+display:
+  default:
+    id: default
+    display_title: Default
+    display_plugin: default
+    position: 0
+    display_options:
+      title: 'The Bible and Interpretation: Comments'
+      fields: {  }
+      pager:
+        type: some
+        options:
+          offset: 0
+          items_per_page: 20
+      access:
+        type: perm
+        options:
+          perm: 'access comments'
+      cache:
+        type: tag
+      sorts:
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+          order: DESC
+          granularity: second
+      filters:
+        status:
+          id: status
+          table: comment_field_data
+          field: status
+          entity_type: comment
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+          expose:
+            operator: ''
+        status_node:
+          id: status_node
+          table: node_field_data
+          field: status
+          relationship: node
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+          expose:
+            operator: ''
+      style:
+        type: rss
+        options:
+          description: 'Recent comments on The Bible and Interpretation.'
+      row:
+        type: comment_rss
+        options:
+          view_mode: default
+      query:
+        type: views_query
+        options: {  }
+      relationships:
+        node:
+          id: node
+          table: comment_field_data
+          field: node
+          entity_type: comment
+          plugin_id: standard
+          required: true
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - user.permissions
+      tags: {  }
+  feed_comments:
+    id: feed_comments
+    display_title: 'Comments feed'
+    display_plugin: feed
+    position: 1
+    display_options:
+      pager:
+        type: some
+        options:
+          offset: 0
+          items_per_page: 20
+      style:
+        type: rss
+        options:
+          description: 'Recent comments on The Bible and Interpretation.'
+      row:
+        type: comment_rss
+        options:
+          view_mode: full
+      defaults:
+        pager: false
+        style: false
+        row: false
+      display_extenders: {  }
+      path: comments/feed
+      sitename_title: false
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - user.permissions
+      tags: {  }

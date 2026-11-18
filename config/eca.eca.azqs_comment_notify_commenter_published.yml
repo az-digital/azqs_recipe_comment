@@ -1,0 +1,83 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.bible_comment
+  module:
+    - eca_base
+    - eca_content
+    - modeler_api
+third_party_settings:
+  modeler_api:
+    label: 'Comments: notify commenter when their comment is approved'
+id: azqs_comment_notify_commenter_published
+weight: null
+events:
+  Event_comment_update:
+    plugin: 'content_entity:update'
+    label: 'Bible comment updated'
+    configuration:
+      type: 'comment bible_comment'
+    successors:
+      -
+        id: Gateway_published
+        condition: Flow_is_published
+conditions:
+  Flow_is_published:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: false
+      entity: ''
+  Flow_was_unpublished:
+    plugin: eca_entity_original_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: true
+      entity: ''
+  Flow_commenter_has_mail:
+    plugin: eca_scalar
+    configuration:
+      left: '[comment:mail]'
+      right: ''
+      operator: equal
+      type: value
+      case: false
+      negate: true
+gateways:
+  Gateway_published:
+    type: 0
+    successors:
+      -
+        id: Gateway_newly_published
+        condition: Flow_was_unpublished
+  Gateway_newly_published:
+    type: 0
+    successors:
+      -
+        id: Activity_email_commenter
+        condition: Flow_commenter_has_mail
+actions:
+  Activity_email_commenter:
+    plugin: action_send_email_action
+    label: 'Email commenter'
+    configuration:
+      recipient: '[comment:mail]'
+      subject: '[site:name]: your comment has been published'
+      message: |
+        Hello [comment:author],
+
+        Your comment on "[comment:entity:title]" has been approved and is now published:
+        [comment:url]
+
+        Thank you for contributing to [site:name].
+      replace_tokens: true
+    successors: {  }

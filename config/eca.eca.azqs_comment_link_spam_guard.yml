@@ -1,0 +1,143 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.bible_comment
+  module:
+    - eca_content
+    - eca_user
+    - modeler_api
+third_party_settings:
+  modeler_api:
+    label: 'Comments: hold new comments containing links for approval'
+id: azqs_comment_link_spam_guard
+weight: null
+events:
+  Event_comment_presave:
+    plugin: 'content_entity:presave'
+    label: 'Bible comment presave'
+    configuration:
+      type: 'comment bible_comment'
+    successors:
+      -
+        id: Gateway_is_new
+        condition: Flow_is_new
+conditions:
+  Flow_is_new:
+    plugin: eca_entity_is_new
+    configuration:
+      negate: false
+      entity: ''
+  Flow_is_published:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: status
+      expected_value: '1'
+      operator: equal
+      type: value
+      case: false
+      negate: false
+      entity: ''
+  Flow_not_comment_admin:
+    plugin: eca_current_user_permission
+    configuration:
+      permission: 'administer comments'
+      negate: true
+  Flow_has_http:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: comment_body
+      expected_value: 'http'
+      operator: contains
+      type: value
+      case: false
+      negate: false
+      entity: ''
+  Flow_no_http:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: comment_body
+      expected_value: 'http'
+      operator: contains
+      type: value
+      case: false
+      negate: true
+      entity: ''
+  Flow_has_www:
+    plugin: eca_entity_field_value
+    configuration:
+      field_name: comment_body
+      expected_value: 'www.'
+      operator: contains
+      type: value
+      case: false
+      negate: false
+      entity: ''
+gateways:
+  Gateway_is_new:
+    type: 0
+    successors:
+      -
+        id: Gateway_is_published
+        condition: Flow_is_published
+  Gateway_is_published:
+    type: 0
+    successors:
+      -
+        id: Gateway_untrusted
+        condition: Flow_not_comment_admin
+  Gateway_untrusted:
+    type: 0
+    successors:
+      -
+        id: Activity_switch_admin
+        condition: Flow_has_http
+      -
+        id: Gateway_check_www
+        condition: Flow_no_http
+  Gateway_check_www:
+    type: 0
+    successors:
+      -
+        id: Activity_switch_admin
+        condition: Flow_has_www
+actions:
+  Activity_switch_admin:
+    plugin: eca_switch_account
+    label: 'Switch to admin (commenters cannot edit their own comment)'
+    configuration:
+      user_id: '1'
+    successors:
+      -
+        id: Activity_unpublish
+        condition: ''
+  Activity_unpublish:
+    plugin: eca_set_field_value
+    label: 'Unpublish comment'
+    configuration:
+      field_name: status
+      field_value: '0'
+      method: 'set:clear'
+      strip_tags: false
+      trim: false
+      save_entity: false
+      object: ''
+    successors:
+      -
+        id: Activity_switch_back
+        condition: ''
+  Activity_switch_back:
+    plugin: eca_switch_back
+    label: 'Switch back'
+    configuration: {  }
+    successors:
+      -
+        id: Activity_message
+        condition: ''
+  Activity_message:
+    plugin: action_message_action
+    label: 'Tell the commenter'
+    configuration:
+      message: 'Your comment contains a link, so it has been held for review by a moderator before it is published.'
+      replace_tokens: false
+    successors: {  }

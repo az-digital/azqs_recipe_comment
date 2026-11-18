@@ -1,0 +1,6 @@
+langcode: en
+status: true
+dependencies: {  }
+formId: comment_form
+captchaType: altcha/ALTCHA
+label: comment_form
